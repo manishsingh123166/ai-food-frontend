@@ -1,7 +1,6 @@
 import React from "react";
 import { ArrowRight, Star, Flame, Clock, Users } from "lucide-react";
 import Image from "next/image";
-import { SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,101 +9,79 @@ import { SITE_STATS, FEATURES, HOW_IT_WORKS_STEPS } from "@/lib/data";
 import PricingSection from "@/components/PricingSection";
 import Link from "next/link";
 
+// ================= HARDCODED ENV KEYS (As requested) =================
+const ENV_KEYS = {
+  GEMINI_API_KEY: "AIzaSyBJiaomduWlCxM2kA4km6hYb7p6mvBbV-Y",
+  STRAPI_API_TOKEN: "debce1bfc72daf8f9f717db912ca4f218d66e3f513052dc19d8be81198a1f4a297750a45ff89847fd11517901d50b35158e130af79a35ed0ef11635b5153313f9a04d01431f683ae68a8f052be7203a53008ed914efdf7d0e6f0b1ac080b3353d797137dcca99842b64292b8abcabf2bd95d723375d99aaa9cd43a79785ee9fa",
+  NEXT_PUBLIC_STRAPI_URL: "http://localhost:1337",
+  UNSPLASH_ACCESS_KEY: "xdTQoPK0a4xQwhSCDmnACB1s42ItJBuSgSNQTfhP1nc",
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_cG9wdWxhci1tdXN0YW5nLTcuY2xlcmsuYWNjb3VudHMuZGV2JA",
+  CLERK_SECRET_KEY: "sk_test_CgeyVUefGoBLV5BJlXmSIYkg1dq9dzpaQYlikHUg22",
+  ARCJET_KEY: "ajkey_01kkr7v8rmfjv9sa6q0z7gggfg"
+};
+// =====================================================================
+
 export default async function LandingPage() {
   const { has } = await auth();
   const subscriptionTier = has({ plan: "pro" }) ? "pro" : "free";
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900">
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
-            {/* Text Content */}
-            <div className="flex-1 text-center md:text-left">
-              <Badge
-                variant="outline"
-                className="border-2 border-orange-600 text-orange-700 bg-orange-50 text-sm font-bold mb-6 uppercase tracking-wide"
-              >
-                <Flame className="mr-1" />
-                #1 AI Cooking Assistant
-              </Badge>
+      {/* Hero Section - FULL PAGE BANNER */}
+      <section className="relative h-[90vh] md:h-screen w-full flex items-center overflow-hidden">
+        {/* Background Image Banner */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/banner.jpeg"
+            alt="Delicious Food Banner"
+            fill
+            priority
+            className="object-cover object-center"
+            quality={100}
+          />
+          {/* Dark Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-black/40 md:bg-gradient-to-r md:from-black/70 md:to-transparent" />
+        </div>
 
-              <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-[0.9] tracking-tight">
-                Turn your{" "}
-                <span className="italic underline decoration-4 decoration-orange-600">
-                  leftovers
-                </span>{" "}
-                into <br />
-                masterpieces.
-              </h1>
+        <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
+          <div className="max-w-3xl text-center md:text-left">
+            <Badge
+              variant="outline"
+              className="border-2 border-orange-500 text-orange-400 bg-black/30 text-sm font-bold mb-6 uppercase tracking-wide backdrop-blur-sm inline-flex items-center"
+            >
+              <Flame className="mr-1 w-4 h-4" />
+              #1 AI Cooking Assistant
+            </Badge>
 
-              <p className="text-xl md:text-2xl text-stone-600 mb-10 max-w-lg mx-auto md:mx-0 font-light">
-                Snap a photo of your fridge. We&apos;ll tell you what to cook.
-                Save money, reduce waste, and eat better tonight.
-              </p>
+            <h1 className="text-5xl md:text-8xl font-bold mb-6 leading-[1.1] tracking-tight text-white">
+              Turn your{" "}
+              <span className="italic underline decoration-4 decoration-orange-500">
+                leftovers
+              </span>{" "}
+              into <br className="hidden md:block" />
+              masterpieces.
+            </h1>
 
+            <p className="text-lg md:text-2xl text-stone-200 mb-10 max-w-xl mx-auto md:mx-0 font-light">
+              Snap a photo of your fridge. We&apos;ll tell you what to cook.
+              Save money, reduce waste, and eat better tonight.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link href="/dashboard">
                 <Button
                   size="xl"
-                  variant="primary"
-                  className="px-8 py-6 text-lg"
+                  className="px-8 py-7 text-lg bg-orange-600 hover:bg-orange-700 text-white border-none transition-transform hover:scale-105"
                 >
                   Start Cooking Free <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-
-              <p className="mt-6 text-sm text-stone-500">
-                <span className="font-bold text-stone-900">10k+ cooks</span>{" "}
-                joined last month
-              </p>
             </div>
 
-            {/* Hero Image */}
-            <Card className="relative aspect-square md:aspect-4/5 border-4 border-stone-900 bg-stone-200 overflow-hidden py-0">
-              <Image
-                src="/pasta-dish.png"
-                alt="Delicious pasta dish"
-                width={500}
-                height={500}
-                className="w-full h-full object-cover"
-              />
-
-              {/* Floating Card */}
-              <Card className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-sm border-2 border-stone-900 py-0">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-bold text-lg">
-                        Rustic Tomato Basil Pasta
-                      </h3>
-                      <div className="flex gap-0.5 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3 h-3 fill-orange-500 text-orange-500"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className="border-2 border-green-700 bg-green-50 text-green-700 font-bold"
-                    >
-                      98% MATCH
-                    </Badge>
-                  </div>
-                  <div className="flex gap-4 text-xs text-stone-500 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> 25 mins
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3" /> 2 servings
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Card>
+            <p className="mt-8 text-sm text-stone-300">
+              <span className="font-bold text-white text-base">10k+ cooks</span>{" "}
+              joined last month
+            </p>
           </div>
         </div>
       </section>
@@ -114,7 +91,7 @@ export default async function LandingPage() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center px-4">
           {SITE_STATS.map((stat, i) => (
             <div key={i}>
-              <div className="text-4xl font-bold mb-1 text-stone-50">
+              <div className="text-4xl font-bold mb-1 text-white">
                 {stat.val}
               </div>
               <Badge
@@ -146,7 +123,7 @@ export default async function LandingPage() {
               return (
                 <Card
                   key={index}
-                  className="border-2 border-stone-200 bg-white hover:border-orange-600 hover:shadow-lg transition-all group py-0"
+                  className="border-2 border-stone-200 bg-white hover:border-orange-600 hover:shadow-lg transition-all group py-0 overflow-hidden"
                 >
                   <CardContent className="p-8">
                     <div className="flex justify-between items-start mb-6">
@@ -205,7 +182,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing - Now Using Component */}
+      {/* Pricing Section */}
       <section className="py-24 px-4">
         <PricingSection subscriptionTier={subscriptionTier} />
       </section>
