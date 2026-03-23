@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/', // Agar koi private dashboard ho toh
     },
-    sitemap: 'https://recipeoai.com/sitemap.xml',
+    sitemap: 'https://www.recipeoai.com/sitemap.xml',
   }
 }

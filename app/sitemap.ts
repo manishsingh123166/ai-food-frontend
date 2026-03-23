@@ -1,11 +1,13 @@
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // ZAROORI: Agar aapka domain abhi 'recipeoai.com' nahi hai, toh Vercel/Render ka URL dalo
   const baseUrl = 'https://www.recipeoai.com'
-  // Production mein env variable use karein, development mein localhost
-  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+  
+  // Render wala Live Backend URL
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://ai-recipe-backend-l00p.onrender.com'
 
-  // 1. STATIC PAGES - Google Indexing ke liye base pages
+  // 1. STATIC PAGES
   const staticPages: MetadataRoute.Sitemap = [
     '',
     '/about',
@@ -26,39 +28,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dynamicPages: MetadataRoute.Sitemap = [];
 
   try {
-    // 2. FETCH RECIPES FROM STRAPI (Using Slugs)
+    // 2. FETCH RECIPES (Slugs for SEO)
     const recipesRes = await fetch(`${strapiUrl}/api/recipes?fields[0]=slug&fields[1]=updatedAt`, {
-      cache: 'no-store' 
+      next: { revalidate: 3600 } // Har ghante update hoga
     });
     const recipesData = await recipesRes.json();
 
-    const recipePages = (recipesData.data || []).map((recipe: any) => ({
-      // Agar slug nahi hai toh documentId fallback rakha hai (Saftey ke liye)
-      url: `${baseUrl}/recipes/${recipe.slug || recipe.documentId}`, 
-      lastModified: new Date(recipe.updatedAt),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }));
+    const recipePages = (recipesData.data || []).map((recipe: any) => {
+      // Strapi v4/v5 compatibility: data.attributes.slug ya data.slug
+      const attr = recipe.attributes || recipe;
+      const slug = attr.slug;
 
-    // 3. FETCH BLOGS FROM STRAPI (Using Slugs)
+      return {
+        url: `${baseUrl}/recipes/${slug}`,
+        lastModified: new Date(attr.updatedAt || new Date()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      };
+    }).filter((p: any) => p.url.indexOf('undefined') === -1); // Error safety
+
+    // 3. FETCH BLOGS (Slugs for SEO)
     const blogsRes = await fetch(`${strapiUrl}/api/blogs?fields[0]=slug&fields[1]=updatedAt`, {
-      cache: 'no-store'
+      next: { revalidate: 3600 }
     });
     const blogsData = await blogsRes.json();
 
-    const blogPages = (blogsData.data || []).map((post: any) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: new Date(post.updatedAt),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
+    const blogPages = (blogsData.data || []).map((post: any) => {
+      const attr = post.attributes || post;
+      const slug = attr.slug;
 
-    // Dono ko dynamicPages array mein daal do
+      return {
+        url: `${baseUrl}/blog/${slug}`,
+        lastModified: new Date(attr.updatedAt || new Date()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      };
+    }).filter((p: any) => p.url.indexOf('undefined') === -1);
+
     dynamicPages = [...recipePages, ...blogPages];
 
   } catch (error) {
-    // Backend band ho toh terminal mein warning aayegi, site nahi pategi
-    console.warn("Sitemap Alert: Strapi fetch failed. Static pages indexed only.");
+    console.error("Sitemap Fetch Error:", error);
   }
 
   return [...staticPages, ...dynamicPages]

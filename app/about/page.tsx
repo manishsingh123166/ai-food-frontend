@@ -30,7 +30,7 @@ export default function AboutPage() {
       "@type": "Organization",
       "name": "RecipeoAI",
       "description": "An AI-powered culinary platform dedicated to sustainable cooking and recipe innovation.",
-      "url": "https://recipeoai.com/about"
+      "url": "https://www.recipeoai.com/about"
     }
   };
 
