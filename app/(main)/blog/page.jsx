@@ -3,10 +3,10 @@ import Link from "next/link";
 import { Calendar, ArrowRight, UserCheck, Star } from "lucide-react";
 import Script from "next/script";
 
-// --- 1. DYNAMIC CONFIG (Isse 'Dynamic server usage' error theek ho jayega) ---
+// --- 1. DYNAMIC CONFIG ---
 export const dynamic = 'force-dynamic';
 
-// --- 2. VIEWPORT CONFIG (Isse 'Unsupported metadata viewport' warning hat jayegi) ---
+// --- 2. VIEWPORT CONFIG ---
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -50,7 +50,7 @@ export default async function BlogPage() {
     return dateB - dateA;
   }) : [];
 
-  // GOOGLE SCHEMA (JSON-LD)
+  // GOOGLE SCHEMA (JSON-LD) - FIXED VERSION (Rating removed to fix Search Console error)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -63,11 +63,6 @@ export default async function BlogPage() {
         "@type": "ImageObject",
         "url": "https://www.recipeoai.com/logo.png"
       }
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "245"
     }
   };
 
@@ -90,6 +85,7 @@ export default async function BlogPage() {
             COOKING <span className="text-orange-600 italic">STORIES.</span>
           </h1>
           <div className="flex items-center gap-2 text-orange-500 mb-4">
+             {/* UI Stars: Ye website par dikhenge, par Google ko disturb nahi karenge */}
              {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
              <span className="text-stone-400 text-xs font-bold ml-2">4.9/5 Rating by AI Enthusiasts</span>
           </div>
@@ -103,7 +99,6 @@ export default async function BlogPage() {
               const postSlug = data.Slug || data.slug;
               const imageUrl = data.Banner?.url || data.Banner?.data?.attributes?.url;
               
-              // Fallback image handling
               const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || '';
               const fullImageUrl = imageUrl ? (imageUrl.startsWith('http') ? imageUrl : `${strapiUrl}${imageUrl}`) : "/placeholder.jpg";
 

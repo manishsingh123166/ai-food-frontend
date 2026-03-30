@@ -18,8 +18,11 @@ import {
 
 const inter = Inter({ subsets: ["latin"] });
 
-// --- 1. SEO METADATA (High Traffic + Low Competition Keywords) ---
+// --- 1. SEO METADATA ---
 export const metadata = {
+  // ZAROORI: metadataBase se saare absolute URLs (images, canonical) sahi bante hain
+  metadataBase: new URL("https://www.recipeoai.com"),
+  
   title: "RecipeoAI - #1 AI Recipe Generator | What to cook with ingredients 2026",
   description: "Transform your leftovers into gourmet masterpieces with RecipeoAI. The world's most advanced ai recipe maker free for keto, vegan, and high protein meal planning. Solve 'what to cook tonight easy' with our smart recipe generator.",
   keywords: [
@@ -31,8 +34,12 @@ export const metadata = {
   ].join(", "),
   authors: [{ name: "Manish Singh" }],
   viewport: "width=device-width, initial-scale=1",
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+  },
   alternates: {
+    // Isse Google sirf https://www. wale link ko hi index karega
     canonical: "https://www.recipeoai.com",
   },
   openGraph: {
@@ -52,6 +59,7 @@ export default function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "RecipeoAI",
+    "url": "https://www.recipeoai.com", // Add kiya URL
     "operatingSystem": "Web",
     "applicationCategory": "LifestyleApplication",
     "aggregateRating": {
@@ -75,7 +83,7 @@ export default function RootLayout({ children }) {
 
   return (
     <ClerkProvider
-      publishableKey="pk_test_cmF0aW9uYWwtaHVza3ktNTEuY2xlcmsuYWNjb3VudHMuZGV2JA"
+      publishableKey="pk_live_Y2xlcmsucmVjaXBlb2FpLmNvbSQ"
       appearance={{
         baseTheme: neobrutalism,
       }}
